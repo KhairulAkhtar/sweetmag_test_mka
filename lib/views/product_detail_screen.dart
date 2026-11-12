@@ -28,7 +28,6 @@ class ProductDetailScreen extends StatelessWidget {
         actions: [
           IconButton(
             onPressed: () {
-              favourites.registerProduct(product);
               favourites.toggleFavourite(product);
             },
             icon: Icon(

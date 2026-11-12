@@ -96,7 +96,6 @@ class ProductCard extends StatelessWidget {
       padding: EdgeInsets.zero,
       constraints: const BoxConstraints(minWidth: 36, minHeight: 36),
       onPressed: () {
-        favourites.registerProduct(product);
         favourites.toggleFavourite(product);
       },
       icon: Icon(

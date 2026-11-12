@@ -37,13 +37,11 @@ void main() {
     final firstViewModel = FavouritesViewModel(
       service: NoNetworkProductService(),
     );
-    await firstViewModel.initialized;
     await firstViewModel.toggleFavourite(product);
 
     final restoredViewModel = FavouritesViewModel(
       service: NoNetworkProductService(),
     );
-    await restoredViewModel.initialized;
 
     expect(restoredViewModel.isFavourite(product), isTrue);
     expect(restoredViewModel.favouriteProducts, hasLength(1));
