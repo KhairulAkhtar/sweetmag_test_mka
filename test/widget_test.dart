@@ -1,30 +1,51 @@
-// This is a basic Flutter widget test.
-//
-// To perform an interaction with a widget in your test, use the WidgetTester
-// utility in the flutter_test package. For example, you can send tap and scroll
-// gestures. You can also use WidgetTester to find child widgets in the widget
-// tree, read text, and verify that the values of widget properties are correct.
-
 import 'package:flutter/material.dart';
 import 'package:flutter_test/flutter_test.dart';
 
 import 'package:sweetmag_test_mka/main.dart';
+import 'package:sweetmag_test_mka/models/product.dart';
+import 'package:sweetmag_test_mka/services/product_service.dart';
+import 'package:sweetmag_test_mka/view_models/product_list_view_model.dart';
+
+class FakeProductService extends ProductService {
+  @override
+  Future<ProductPage> fetchProducts({int limit = 20, int skip = 0}) async {
+    final pageItems = List.generate(
+      20,
+      (index) => Product(
+        id: index + skip + 1,
+        title: 'Product ${index + skip + 1}',
+        description: 'Description ${index + skip + 1}',
+        price: 10 + index.toDouble(),
+        rating: 4.5,
+        stock: 10,
+        thumbnail: 'https://picsum.photos/seed/${index + skip + 1}/200/200',
+        images: const [],
+      ),
+    );
+
+    return ProductPage(
+      products: pageItems,
+      total: 40,
+      skip: skip,
+      limit: limit,
+    );
+  }
+
+  @override
+  Future<ProductPage> searchProducts(String query, {int limit = 20, int skip = 0}) async {
+    return fetchProducts(limit: limit, skip: skip);
+  }
+}
 
 void main() {
-  testWidgets('Counter increments smoke test', (WidgetTester tester) async {
-    // Build our app and trigger a frame.
-    await tester.pumpWidget(const MyApp());
+  testWidgets('Product list renders and loads first page', (WidgetTester tester) async {
+    final fakeViewModel = ProductListViewModel(service: FakeProductService());
 
-    // Verify that our counter starts at 0.
-    expect(find.text('0'), findsOneWidget);
-    expect(find.text('1'), findsNothing);
+    await tester.pumpWidget(MyApp(initialViewModel: fakeViewModel));
+    await tester.pumpAndSettle();
 
-    // Tap the '+' icon and trigger a frame.
-    await tester.tap(find.byIcon(Icons.add));
-    await tester.pump();
-
-    // Verify that our counter has incremented.
-    expect(find.text('0'), findsNothing);
-    expect(find.text('1'), findsOneWidget);
+    expect(find.text('Product Catalogue'), findsOneWidget);
+    expect(find.text('Product 1'), findsOneWidget);
+    expect(find.byType(ListView), findsOneWidget);
   });
 }
