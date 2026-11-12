@@ -17,8 +17,8 @@ Clone this repository and follow the setup below to run. The project is currentl
 Flutter SDK : **3.38.3**  
 Dart SDK : **3.10.1**  
 Android SDK : **36.1.0**  
-Android Studio : **2024.2.1 Ladybug - Patch 3**
-Java/JDK: **17**
+Android Studio : **2024.2.1 Ladybug - Patch 3**  
+Java/JDK: **17**  
 VS Code : **1.145.3**  
 
 # State Management
