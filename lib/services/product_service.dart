@@ -29,6 +29,11 @@ class ProductService {
     return _getPage('$_baseUrl/products?limit=$limit&skip=$skip');
   }
 
+  Future<ProductPage> searchProducts(String query, {int limit = 20, int skip = 0}) {
+    final encodedQuery = Uri.encodeComponent(query.trim());
+    return _getPage('$_baseUrl/products/search?q=$encodedQuery&limit=$limit&skip=$skip');
+  }
+
   Future<ProductPage> _getPage(String url) async {
     try {
       final response = await _client.get(Uri.parse(url));
