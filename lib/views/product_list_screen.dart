@@ -192,7 +192,7 @@ class _ProductListScreenState extends State<ProductListScreen> {
       );
     }
 
-    if (!viewModel.isEmpty) {
+    if (viewModel.isEmpty) {
       return StatePlaceholder(
         type: StatePlaceholderType.empty,
         message: 'No products match your search.',
