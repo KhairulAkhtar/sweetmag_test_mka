@@ -192,19 +192,11 @@ class _ProductListScreenState extends State<ProductListScreen> {
       );
     }
 
-    if (viewModel.errorMessage != null && viewModel.products.isEmpty) {
+    if (!viewModel.isEmpty) {
       return StatePlaceholder(
-        type: StatePlaceholderType.offline,
-        message:
-            'No internet connection. Please check your network and try again.',
-        onRetry: viewModel.refresh,
-      );
-    }
-
-    if (viewModel.isEmpty) {
-      return const StatePlaceholder(
         type: StatePlaceholderType.empty,
         message: 'No products match your search.',
+        onRetry: viewModel.refresh,
       );
     }
 
@@ -273,11 +265,23 @@ class _ProductListScreenState extends State<ProductListScreen> {
           }
 
           return viewModel.isOffline
-              ? const Center(
+              ? Center(
                   child: Padding(
                     padding: EdgeInsets.all(16),
-                    child: Text(
-                      'No internet connection. Unable to load more products.',
+                    child: Column(
+                      children: [
+                        const Icon(
+                          Icons.signal_wifi_connected_no_internet_4_rounded,
+                        ),
+                        const SizedBox(height: 4),
+                        Text(
+                          'No internet connection. Unable to load more products.',
+                        ),
+                        TextButton(
+                          onPressed: viewModel.loadNextPage,
+                          child: const Text('Retry'),
+                        ),
+                      ],
                     ),
                   ),
                 )
