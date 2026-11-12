@@ -184,12 +184,19 @@ class _ProductListScreenState extends State<ProductListScreen> {
       return const StatePlaceholder(type: StatePlaceholderType.loading);
     }
 
-    if (viewModel.errorMessage != null && viewModel.products.isEmpty) {
+    if (viewModel.errorMessage != null && !viewModel.isOffline) {
       return StatePlaceholder(
         type: StatePlaceholderType.error,
-        message: viewModel.isOffline
-            ? 'No internet connection. Please check your network and try again.'
-            : 'Unable to load products right now. Check your connection and try again.',
+        message: 'Unable to load products. Check the request and try again.',
+        onRetry: viewModel.refresh,
+      );
+    }
+
+    if (viewModel.errorMessage != null && viewModel.products.isEmpty) {
+      return StatePlaceholder(
+        type: StatePlaceholderType.offline,
+        message:
+            'No internet connection. Please check your network and try again.',
         onRetry: viewModel.refresh,
       );
     }
@@ -245,6 +252,26 @@ class _ProductListScreenState extends State<ProductListScreen> {
       itemCount: viewModel.products.length + (viewModel.hasMore ? 1 : 0),
       itemBuilder: (context, index) {
         if (index >= viewModel.products.length) {
+          if (viewModel.errorMessage != null && !viewModel.isOffline) {
+            return Center(
+              child: Padding(
+                padding: const EdgeInsets.all(12),
+                child: Column(
+                  mainAxisSize: MainAxisSize.min,
+                  children: [
+                    const Icon(Icons.error_outline_rounded),
+                    const SizedBox(height: 4),
+                    const Text('Unable to load more products.'),
+                    TextButton(
+                      onPressed: viewModel.loadNextPage,
+                      child: const Text('Retry'),
+                    ),
+                  ],
+                ),
+              ),
+            );
+          }
+
           return viewModel.isOffline
               ? const Center(
                   child: Padding(

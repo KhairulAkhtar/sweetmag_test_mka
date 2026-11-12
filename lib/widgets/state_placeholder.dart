@@ -1,6 +1,6 @@
 import 'package:flutter/material.dart';
 
-enum StatePlaceholderType { loading, error, empty }
+enum StatePlaceholderType { loading, error, offline, empty }
 
 class StatePlaceholder extends StatelessWidget {
   const StatePlaceholder({
@@ -20,8 +20,13 @@ class StatePlaceholder extends StatelessWidget {
       return const Center(child: CircularProgressIndicator());
     }
 
-    final String title = message ??
-        (type == StatePlaceholderType.empty ? 'No products found' : 'Something went wrong');
+    final String title =
+        message ??
+        switch (type) {
+          StatePlaceholderType.empty => 'No products found',
+          StatePlaceholderType.offline => 'No internet connection',
+          _ => 'Something went wrong',
+        };
 
     return Center(
       child: Padding(
@@ -30,7 +35,12 @@ class StatePlaceholder extends StatelessWidget {
           mainAxisAlignment: MainAxisAlignment.center,
           children: [
             Icon(
-              type == StatePlaceholderType.empty ? Icons.search_off_rounded : Icons.signal_wifi_connected_no_internet_4_rounded,
+              switch (type) {
+                StatePlaceholderType.empty => Icons.search_off_rounded,
+                StatePlaceholderType.offline =>
+                  Icons.signal_wifi_connected_no_internet_4_rounded,
+                _ => Icons.error_outline_rounded,
+              },
               size: 54,
               color: Theme.of(context).colorScheme.primary.withAlpha(179),
             ),
