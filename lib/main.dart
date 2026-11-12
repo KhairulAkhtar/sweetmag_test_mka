@@ -1,6 +1,7 @@
 import 'package:flutter/material.dart';
 import 'package:provider/provider.dart';
 
+import 'view_models/favourites_view_model.dart';
 import 'view_models/product_list_view_model.dart';
 import 'views/product_list_screen.dart';
 
@@ -21,6 +22,9 @@ class MyApp extends StatelessWidget {
         ChangeNotifierProvider<ProductListViewModel>(
           create: (_) => _initialViewModel ?? ProductListViewModel(),
           lazy: false,
+        ),
+        ChangeNotifierProvider<FavouritesViewModel>(
+          create: (_) => FavouritesViewModel(),
         ),
       ],
       child: MaterialApp(

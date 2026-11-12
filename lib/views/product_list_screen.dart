@@ -1,10 +1,10 @@
 import 'package:flutter/material.dart';
 import 'package:provider/provider.dart';
 import 'package:sweetmag_test_mka/views/product_detail_screen.dart';
-
 import '../view_models/product_list_view_model.dart';
 import '../widgets/product_card.dart';
 import '../widgets/state_placeholder.dart';
+import 'wishlist_screen.dart';
 
 class ProductListScreen extends StatefulWidget {
   const ProductListScreen({super.key});
@@ -57,6 +57,17 @@ class _ProductListScreenState extends State<ProductListScreen> {
       appBar: AppBar(
         title: const Text('Product Catalogue'),
         centerTitle: false,
+        actions: [
+          IconButton(
+            onPressed: () {
+              Navigator.of(
+                context,
+              ).push(MaterialPageRoute(builder: (_) => const WishlistScreen()));
+            },
+            icon: const Icon(Icons.favorite_rounded),
+            tooltip: 'Wishlist',
+          ),
+        ],
       ),
       body: RefreshIndicator(
         onRefresh: viewModel.refresh,
@@ -169,10 +180,15 @@ class _ProductListScreenState extends State<ProductListScreen> {
             padding: const EdgeInsets.symmetric(horizontal: 16, vertical: 10),
             child: Row(
               children: [
-                const Icon(Icons.signal_wifi_connected_no_internet_4_rounded, size: 18),
+                const Icon(
+                  Icons.signal_wifi_connected_no_internet_4_rounded,
+                  size: 18,
+                ),
                 const SizedBox(width: 8),
                 const Expanded(
-                  child: Text('Internet connection lost. Showing cached products.'),
+                  child: Text(
+                    'Internet connection lost. Showing cached products.',
+                  ),
                 ),
                 TextButton(
                   onPressed: viewModel.refresh,

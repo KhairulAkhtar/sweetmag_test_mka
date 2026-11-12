@@ -1,6 +1,8 @@
 import 'package:flutter/material.dart';
+import 'package:provider/provider.dart';
 
 import '../models/product.dart';
+import '../view_models/favourites_view_model.dart';
 
 class ProductDetailScreen extends StatelessWidget {
   const ProductDetailScreen({super.key, required this.product});
@@ -9,24 +11,28 @@ class ProductDetailScreen extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    return _ProductDetailBody(product: product);
-  }
-}
-
-class _ProductDetailBody extends StatelessWidget {
-  const _ProductDetailBody({required this.product});
-
-  final Product product;
-
-  @override
-  Widget build(BuildContext context) {
-    final theme = Theme.of(context);
-    final imageUrls = product.images.isNotEmpty
-        ? product.images
-        : [product.thumbnail];
+    final favourites = context.watch<FavouritesViewModel>();
+    final isFavourite = favourites.isFavourite(product);
+    final imageUrls = product.images.isNotEmpty ? product.images : [product.thumbnail];
 
     return Scaffold(
-      appBar: AppBar(title: Text(product.title), centerTitle: false),
+      appBar: AppBar(
+        title: Text(product.title),
+        centerTitle: false,
+        actions: [
+          IconButton(
+            onPressed: () {
+              favourites.registerProduct(product);
+              favourites.toggleFavourite(product);
+            },
+            icon: Icon(
+              isFavourite ? Icons.favorite_rounded : Icons.favorite_border_rounded,
+              color: isFavourite ? Colors.red : null,
+            ),
+            tooltip: isFavourite ? 'Remove from wishlist' : 'Add to wishlist',
+          ),
+        ],
+      ),
       body: SingleChildScrollView(
         padding: const EdgeInsets.all(16),
         child: Column(
@@ -42,9 +48,7 @@ class _ProductDetailBody extends StatelessWidget {
                     margin: const EdgeInsets.only(right: 8),
                     decoration: BoxDecoration(
                       borderRadius: BorderRadius.circular(16),
-                      color: Theme.of(
-                        context,
-                      ).colorScheme.surfaceContainerHighest,
+                      color: Theme.of(context).colorScheme.surfaceContainerHighest,
                     ),
                     child: ClipRRect(
                       borderRadius: BorderRadius.circular(16),
@@ -52,10 +56,7 @@ class _ProductDetailBody extends StatelessWidget {
                         imageUrl,
                         fit: BoxFit.cover,
                         errorBuilder: (_, _, _) => const Center(
-                          child: Icon(
-                            Icons.image_not_supported_outlined,
-                            size: 48,
-                          ),
+                          child: Icon(Icons.image_not_supported_outlined, size: 48),
                         ),
                       ),
                     ),
@@ -66,7 +67,7 @@ class _ProductDetailBody extends StatelessWidget {
             const SizedBox(height: 20),
             Text(
               product.title,
-              style: theme.textTheme.headlineSmall?.copyWith(
+              style: Theme.of(context).textTheme.headlineSmall?.copyWith(
                 fontWeight: FontWeight.w700,
               ),
             ),
@@ -84,11 +85,7 @@ class _ProductDetailBody extends StatelessWidget {
                 ),
                 const SizedBox(width: 8),
                 Chip(
-                  avatar: const Icon(
-                    Icons.star_rounded,
-                    color: Colors.amber,
-                    size: 18,
-                  ),
+                  avatar: const Icon(Icons.star_rounded, color: Colors.amber, size: 18),
                   label: Text(product.rating.toStringAsFixed(1)),
                 ),
               ],
@@ -96,16 +93,14 @@ class _ProductDetailBody extends StatelessWidget {
             const SizedBox(height: 24),
             Text(
               'Description',
-              style: theme.textTheme.titleLarge?.copyWith(
+              style: Theme.of(context).textTheme.titleLarge?.copyWith(
                 fontWeight: FontWeight.w700,
               ),
             ),
             const SizedBox(height: 8),
             Text(
-              product.description.isEmpty
-                  ? 'No description available.'
-                  : product.description,
-              style: theme.textTheme.bodyLarge,
+              product.description.isEmpty ? 'No description available.' : product.description,
+              style: Theme.of(context).textTheme.bodyLarge,
             ),
           ],
         ),

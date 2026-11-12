@@ -29,9 +29,31 @@ class ProductService {
     return _getPage('$_baseUrl/products?limit=$limit&skip=$skip');
   }
 
-  Future<ProductPage> searchProducts(String query, {int limit = 20, int skip = 0}) {
+  Future<ProductPage> searchProducts(
+    String query, {
+    int limit = 20,
+    int skip = 0,
+  }) {
     final encodedQuery = Uri.encodeComponent(query.trim());
-    return _getPage('$_baseUrl/products/search?q=$encodedQuery&limit=$limit&skip=$skip');
+    return _getPage(
+      '$_baseUrl/products/search?q=$encodedQuery&limit=$limit&skip=$skip',
+    );
+  }
+
+  Future<Product> fetchProductById(int id) async {
+    final response = await _client.get(Uri.parse('$_baseUrl/products/$id'));
+    if (response.statusCode < 200 || response.statusCode >= 300) {
+      throw HttpException(
+        'Request failed with status ${response.statusCode}',
+        uri: Uri.parse('$_baseUrl/products/$id'),
+      );
+    }
+
+    final decoded = jsonDecode(response.body);
+    if (decoded is! Map<String, dynamic>) {
+      throw const FormatException('Unexpected product payload');
+    }
+    return Product.fromJson(decoded);
   }
 
   Future<ProductPage> _getPage(String url) async {
