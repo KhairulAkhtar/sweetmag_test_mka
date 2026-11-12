@@ -42,10 +42,10 @@ void main() {
     final fakeViewModel = ProductListViewModel(service: FakeProductService());
 
     await tester.pumpWidget(MyApp(initialViewModel: fakeViewModel));
-    await tester.pumpAndSettle();
+    await tester.pump();
 
-    expect(find.text('Product Catalogue'), findsOneWidget);
+    expect(find.text('eShop'), findsOneWidget);
     expect(find.text('Product 1'), findsOneWidget);
-    expect(find.byType(ListView), findsOneWidget);
+    expect(find.byType(GridView), findsOneWidget);
   });
 }

@@ -1,5 +1,6 @@
 import 'package:flutter/material.dart';
 import 'package:provider/provider.dart';
+import 'package:sweetmag_test_mka/utils/share_util.dart';
 import 'package:sweetmag_test_mka/views/product_detail_screen.dart';
 import '../view_models/product_list_view_model.dart';
 import '../widgets/product_card.dart';
@@ -39,8 +40,12 @@ class _ProductListScreenState extends State<ProductListScreen> {
   }
 
   void _handleScroll() {
+    if (!_scrollController.hasClients) {
+      return;
+    }
+
     final viewModel = context.read<ProductListViewModel>();
-    if (_scrollController.position.extentAfter < 300) {
+    if (_scrollController.position.extentAfter == 0) {
       viewModel.loadNextPage();
     }
   }
@@ -55,7 +60,7 @@ class _ProductListScreenState extends State<ProductListScreen> {
 
     return Scaffold(
       appBar: AppBar(
-        title: const Text('Product Catalogue'),
+        title: const Text('eShop'),
         centerTitle: false,
         actions: [
           IconButton(
@@ -64,20 +69,27 @@ class _ProductListScreenState extends State<ProductListScreen> {
                 context,
               ).push(MaterialPageRoute(builder: (_) => const WishlistScreen()));
             },
-            icon: const Icon(Icons.favorite_rounded),
+            icon: const Icon(Icons.favorite_rounded, color: Colors.redAccent),
             tooltip: 'Wishlist',
           ),
         ],
       ),
-      body: RefreshIndicator(
-        onRefresh: viewModel.refresh,
-        child: Column(
-          children: [
-            Padding(
-              padding: const EdgeInsets.fromLTRB(16, 16, 16, 8),
-              child: Column(
-                children: [
-                  TextField(
+      body: Stack(
+        children: [
+          Column(
+            children: [
+              Container(
+                height: 100,
+                decoration: BoxDecoration(
+                  color: darkPurple(),
+                  borderRadius: const BorderRadius.only(
+                    bottomLeft: Radius.circular(50),
+                    bottomRight: Radius.circular(50),
+                  ),
+                ),
+                child: Padding(
+                  padding: const EdgeInsets.symmetric(horizontal: 16.0),
+                  child: TextField(
                     controller: _searchController,
                     focusNode: _searchFocusNode,
                     decoration: InputDecoration(
@@ -88,61 +100,79 @@ class _ProductListScreenState extends State<ProductListScreen> {
                       ),
                       filled: true,
                     ),
-                    onChanged: (value) {
-                      viewModel.updateQuery(value);
-                    },
-                    onSubmitted: (value) {
-                      viewModel.search(value);
-                    },
+                    onChanged: viewModel.updateQuery,
                   ),
-                  if (_searchFocusNode.hasFocus &&
-                      viewModel.recentSearches.isNotEmpty)
-                    Container(
-                      margin: const EdgeInsets.only(top: 8),
-                      width: double.infinity,
-                      decoration: BoxDecoration(
-                        color: Colors.white,
-                        borderRadius: BorderRadius.circular(12),
-                        border: Border.all(color: Colors.grey.shade300),
-                      ),
-                      child: Column(
-                        crossAxisAlignment: CrossAxisAlignment.start,
-                        children: [
-                          Padding(
-                            padding: const EdgeInsets.fromLTRB(12, 12, 12, 8),
-                            child: Row(
-                              mainAxisAlignment: MainAxisAlignment.spaceBetween,
-                              children: [
-                                const Text('Recent searches'),
-                                TextButton(
-                                  onPressed: viewModel.clearRecentSearches,
-                                  child: const Text('Clear'),
-                                ),
-                              ],
-                            ),
-                          ),
-                          ...viewModel.recentSearches.map((search) {
-                            return ListTile(
-                              dense: true,
-                              title: Text(search),
-                              onTap: () {
-                                _searchController.text = search;
-                                _searchController.selection =
-                                    TextSelection.fromPosition(
-                                      TextPosition(offset: search.length),
-                                    );
-                                _searchFocusNode.unfocus();
-                                viewModel.search(search);
-                              },
-                            );
-                          }),
-                        ],
-                      ),
-                    ),
+                ),
+              ),
+              Expanded(
+                child: RefreshIndicator(
+                  onRefresh: viewModel.refresh,
+                  child: _buildContent(viewModel),
+                ),
+              ),
+            ],
+          ),
+          if (_searchFocusNode.hasFocus && viewModel.recentSearches.isNotEmpty)
+            Positioned(
+              top: 60,
+              left: 16,
+              right: 16,
+              child: _buildRecentSearches(viewModel),
+            ),
+        ],
+      ),
+    );
+  }
+
+  Widget _buildRecentSearches(ProductListViewModel viewModel) {
+    return Material(
+      elevation: 8,
+      color: Theme.of(context).colorScheme.surface,
+      borderRadius: BorderRadius.circular(12),
+      clipBehavior: Clip.antiAlias,
+      child: Container(
+        constraints: const BoxConstraints(maxHeight: 340),
+        decoration: BoxDecoration(
+          borderRadius: BorderRadius.circular(12),
+          border: Border.all(color: Colors.grey.shade300),
+        ),
+        child: Column(
+          mainAxisSize: MainAxisSize.min,
+          crossAxisAlignment: CrossAxisAlignment.start,
+          children: [
+            Padding(
+              padding: const EdgeInsets.fromLTRB(12, 4, 12, 4),
+              child: Row(
+                mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                children: [
+                  const Text('Recent searches'),
+                  TextButton(
+                    onPressed: viewModel.clearRecentSearches,
+                    child: const Text('Clear'),
+                  ),
                 ],
               ),
             ),
-            Expanded(child: _buildContent(viewModel)),
+            Flexible(
+              child: ListView(
+                padding: EdgeInsets.zero,
+                shrinkWrap: true,
+                children: viewModel.recentSearches.map((search) {
+                  return ListTile(
+                    dense: true,
+                    title: Text(search),
+                    onTap: () {
+                      _searchController.text = search;
+                      _searchController.selection = TextSelection.fromPosition(
+                        TextPosition(offset: search.length),
+                      );
+                      _searchFocusNode.unfocus();
+                      viewModel.search(search);
+                    },
+                  );
+                }).toList(),
+              ),
+            ),
           ],
         ),
       ),
@@ -203,15 +233,33 @@ class _ProductListScreenState extends State<ProductListScreen> {
   }
 
   Widget _buildList(ProductListViewModel viewModel) {
-    return ListView.builder(
+    return GridView.builder(
       controller: _scrollController,
+      padding: const EdgeInsets.symmetric(horizontal: 8, vertical: 8),
+      gridDelegate: const SliverGridDelegateWithFixedCrossAxisCount(
+        crossAxisCount: 2,
+        crossAxisSpacing: 4,
+        mainAxisSpacing: 4,
+        childAspectRatio: 0.68,
+      ),
       itemCount: viewModel.products.length + (viewModel.hasMore ? 1 : 0),
       itemBuilder: (context, index) {
         if (index >= viewModel.products.length) {
-          return const Padding(
-            padding: EdgeInsets.all(16),
-            child: Center(child: CircularProgressIndicator()),
-          );
+          return viewModel.isOffline
+              ? const Center(
+                  child: Padding(
+                    padding: EdgeInsets.all(16),
+                    child: Text(
+                      'No internet connection. Unable to load more products.',
+                    ),
+                  ),
+                )
+              : const Center(
+                  child: Padding(
+                    padding: EdgeInsets.all(16),
+                    child: CircularProgressIndicator(),
+                  ),
+                );
         }
 
         final product = viewModel.products[index];

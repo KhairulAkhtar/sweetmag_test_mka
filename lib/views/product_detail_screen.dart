@@ -1,6 +1,7 @@
 import 'package:cached_network_image/cached_network_image.dart';
 import 'package:flutter/material.dart';
 import 'package:provider/provider.dart';
+import 'package:sweetmag_test_mka/utils/share_util.dart';
 
 import '../models/product.dart';
 import '../view_models/favourites_view_model.dart';
@@ -14,13 +15,15 @@ class ProductDetailScreen extends StatelessWidget {
   Widget build(BuildContext context) {
     final favourites = context.watch<FavouritesViewModel>();
     final isFavourite = favourites.isFavourite(product);
-    final imageUrls = product.images.isNotEmpty
-        ? product.images
-        : [product.thumbnail];
 
     return Scaffold(
+      backgroundColor: darkPurple(),
       appBar: AppBar(
-        title: Text(product.title),
+        title: Text(
+          product.title,
+          maxLines: 1,
+          overflow: TextOverflow.ellipsis,
+        ),
         centerTitle: false,
         actions: [
           IconButton(
@@ -38,7 +41,52 @@ class ProductDetailScreen extends StatelessWidget {
           ),
         ],
       ),
-      body: SingleChildScrollView(
+      body: Stack(
+        children: [
+          // header design
+          Column(
+            children: [
+              const SizedBox(height: 100),
+              Expanded(
+                child: Container(
+                  decoration: BoxDecoration(
+                    borderRadius: const BorderRadius.only(
+                      topLeft: Radius.circular(50),
+                      topRight: Radius.circular(50),
+                    ),
+                    color: background(),
+                  ),
+                ),
+              ),
+            ],
+          ),
+          // show details
+          _productDetailW(context),
+        ],
+      ),
+    );
+  }
+
+  Widget _productDetailW(BuildContext context) {
+    final imageUrls = product.images.isNotEmpty
+        ? product.images
+        : [product.thumbnail];
+    return Container(
+      margin: const EdgeInsets.all(20),
+      padding: const EdgeInsets.all(10),
+      decoration: BoxDecoration(
+        color: Colors.white,
+        borderRadius: BorderRadius.circular(15),
+        boxShadow: [
+          BoxShadow(
+            color: Colors.grey.withOpacity(0.5),
+            spreadRadius: 2,
+            blurRadius: 5,
+            offset: const Offset(0, 3), // changes position of shadow
+          ),
+        ],
+      ),
+      child: SingleChildScrollView(
         padding: const EdgeInsets.all(16),
         child: Column(
           crossAxisAlignment: CrossAxisAlignment.start,
@@ -85,7 +133,7 @@ class ProductDetailScreen extends StatelessWidget {
               ).textTheme.headlineSmall?.copyWith(fontWeight: FontWeight.w700),
             ),
             const SizedBox(height: 12),
-            Row(
+            Wrap(
               children: [
                 Chip(
                   avatar: const Icon(Icons.attach_money_rounded, size: 18),

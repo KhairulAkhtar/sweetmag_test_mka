@@ -1,5 +1,6 @@
 import 'package:flutter/material.dart';
 import 'package:provider/provider.dart';
+import 'package:sweetmag_test_mka/views/product_detail_screen.dart';
 
 import '../view_models/favourites_view_model.dart';
 import '../widgets/product_card.dart';
@@ -45,11 +46,27 @@ class WishlistScreen extends StatelessWidget {
 
     return Scaffold(
       appBar: AppBar(title: const Text('Wishlist')),
-      body: ListView.builder(
+      body: GridView.builder(
+        padding: const EdgeInsets.symmetric(horizontal: 8, vertical: 8),
+        gridDelegate: const SliverGridDelegateWithFixedCrossAxisCount(
+          crossAxisCount: 2,
+          crossAxisSpacing: 4,
+          mainAxisSpacing: 4,
+          childAspectRatio: 0.68,
+        ),
         itemCount: favourites.favouriteProducts.length,
         itemBuilder: (context, index) {
           final product = favourites.favouriteProducts[index];
-          return ProductCard(product: product);
+          return ProductCard(
+            product: product,
+            onTap: () {
+              Navigator.of(context).push(
+                MaterialPageRoute(
+                  builder: (_) => ProductDetailScreen(product: product),
+                ),
+              );
+            },
+          );
         },
       ),
     );

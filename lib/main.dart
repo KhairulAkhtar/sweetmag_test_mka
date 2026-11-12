@@ -1,5 +1,6 @@
 import 'package:flutter/material.dart';
 import 'package:provider/provider.dart';
+import 'package:sweetmag_test_mka/utils/share_util.dart';
 
 import 'view_models/favourites_view_model.dart';
 import 'view_models/product_list_view_model.dart';
@@ -11,7 +12,7 @@ void main() {
 
 class MyApp extends StatelessWidget {
   const MyApp({super.key, ProductListViewModel? initialViewModel})
-      : _initialViewModel = initialViewModel;
+    : _initialViewModel = initialViewModel;
 
   final ProductListViewModel? _initialViewModel;
 
@@ -28,10 +29,21 @@ class MyApp extends StatelessWidget {
         ),
       ],
       child: MaterialApp(
-        title: 'Product Catalogue',
+        title: 'eShop',
         theme: ThemeData(
           useMaterial3: true,
           colorSchemeSeed: Colors.indigo,
+          appBarTheme: AppBarTheme(
+            scrolledUnderElevation: 0,
+            elevation: 0,
+            backgroundColor: darkPurple(),
+            titleTextStyle: const TextStyle(
+              color: Colors.white,
+              fontSize: 20,
+              fontWeight: FontWeight.bold,
+            ),
+            iconTheme: const IconThemeData(color: Colors.white),
+          ),
         ),
         home: const ProductListScreen(),
       ),
