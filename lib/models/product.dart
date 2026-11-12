@@ -32,4 +32,21 @@ class Product {
       images: rawImages is List ? rawImages.map((e) => '$e').toList() : const [],
     );
   }
+
+  Map<String, dynamic> toJson() {
+    return {
+      'id': id,
+      'title': title,
+      'description': description,
+      'price': price,
+      'rating': rating,
+      'stock': stock,
+      'thumbnail': thumbnail,
+      'images': images,
+    };
+  }
+
+  factory Product.fromCache(Map<String, dynamic> json) {
+    return Product.fromJson(json);
+  }
 }

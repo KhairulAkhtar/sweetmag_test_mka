@@ -146,8 +146,9 @@ class _ProductListScreenState extends State<ProductListScreen> {
     if (viewModel.errorMessage != null && viewModel.products.isEmpty) {
       return StatePlaceholder(
         type: StatePlaceholderType.error,
-        message:
-            'Unable to load products right now. Check your connection and try again.',
+        message: viewModel.isOffline
+            ? 'No internet connection. Please check your network and try again.'
+            : 'Unable to load products right now. Check your connection and try again.',
         onRetry: viewModel.refresh,
       );
     }
@@ -159,6 +160,33 @@ class _ProductListScreenState extends State<ProductListScreen> {
       );
     }
 
+    return Column(
+      children: [
+        if (viewModel.isOffline)
+          Container(
+            width: double.infinity,
+            color: Colors.orange.shade100,
+            padding: const EdgeInsets.symmetric(horizontal: 16, vertical: 10),
+            child: Row(
+              children: [
+                const Icon(Icons.signal_wifi_connected_no_internet_4_rounded, size: 18),
+                const SizedBox(width: 8),
+                const Expanded(
+                  child: Text('Internet connection lost. Showing cached products.'),
+                ),
+                TextButton(
+                  onPressed: viewModel.refresh,
+                  child: const Text('Retry'),
+                ),
+              ],
+            ),
+          ),
+        Expanded(child: _buildList(viewModel)),
+      ],
+    );
+  }
+
+  Widget _buildList(ProductListViewModel viewModel) {
     return ListView.builder(
       controller: _scrollController,
       itemCount: viewModel.products.length + (viewModel.hasMore ? 1 : 0),
