@@ -1,5 +1,6 @@
 import 'package:flutter/material.dart';
 import 'package:provider/provider.dart';
+import 'package:sweetmag_test_mka/views/product_detail_screen.dart';
 
 import '../view_models/product_list_view_model.dart';
 import '../widgets/product_card.dart';
@@ -71,7 +72,9 @@ class _ProductListScreenState extends State<ProductListScreen> {
                     decoration: InputDecoration(
                       hintText: 'Search products',
                       prefixIcon: const Icon(Icons.search_rounded),
-                      border: OutlineInputBorder(borderRadius: BorderRadius.circular(12)),
+                      border: OutlineInputBorder(
+                        borderRadius: BorderRadius.circular(12),
+                      ),
                       filled: true,
                     ),
                     onChanged: (value) {
@@ -81,7 +84,8 @@ class _ProductListScreenState extends State<ProductListScreen> {
                       viewModel.search(value);
                     },
                   ),
-                  if (_searchFocusNode.hasFocus && viewModel.recentSearches.isNotEmpty)
+                  if (_searchFocusNode.hasFocus &&
+                      viewModel.recentSearches.isNotEmpty)
                     Container(
                       margin: const EdgeInsets.only(top: 8),
                       width: double.infinity,
@@ -112,9 +116,10 @@ class _ProductListScreenState extends State<ProductListScreen> {
                               title: Text(search),
                               onTap: () {
                                 _searchController.text = search;
-                                _searchController.selection = TextSelection.fromPosition(
-                                  TextPosition(offset: search.length),
-                                );
+                                _searchController.selection =
+                                    TextSelection.fromPosition(
+                                      TextPosition(offset: search.length),
+                                    );
                                 _searchFocusNode.unfocus();
                                 viewModel.search(search);
                               },
@@ -126,9 +131,7 @@ class _ProductListScreenState extends State<ProductListScreen> {
                 ],
               ),
             ),
-            Expanded(
-              child: _buildContent(viewModel),
-            ),
+            Expanded(child: _buildContent(viewModel)),
           ],
         ),
       ),
@@ -143,7 +146,8 @@ class _ProductListScreenState extends State<ProductListScreen> {
     if (viewModel.errorMessage != null && viewModel.products.isEmpty) {
       return StatePlaceholder(
         type: StatePlaceholderType.error,
-        message: 'Unable to load products right now. Check your connection and try again.',
+        message:
+            'Unable to load products right now. Check your connection and try again.',
         onRetry: viewModel.refresh,
       );
     }
@@ -170,7 +174,11 @@ class _ProductListScreenState extends State<ProductListScreen> {
         return ProductCard(
           product: product,
           onTap: () {
-            debugPrint('Tapped product ${product.title}');
+            Navigator.of(context).push(
+              MaterialPageRoute(
+                builder: (_) => ProductDetailScreen(product: product),
+              ),
+            );
           },
         );
       },
