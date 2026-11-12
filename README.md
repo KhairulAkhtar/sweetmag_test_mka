@@ -1,4 +1,4 @@
-# SweetMeg
+# SweetMag
 
 Technical Assessment For Flutter Developer Position
 
