@@ -1,3 +1,4 @@
+import 'package:cached_network_image/cached_network_image.dart';
 import 'package:flutter/material.dart';
 import 'package:provider/provider.dart';
 
@@ -13,7 +14,9 @@ class ProductDetailScreen extends StatelessWidget {
   Widget build(BuildContext context) {
     final favourites = context.watch<FavouritesViewModel>();
     final isFavourite = favourites.isFavourite(product);
-    final imageUrls = product.images.isNotEmpty ? product.images : [product.thumbnail];
+    final imageUrls = product.images.isNotEmpty
+        ? product.images
+        : [product.thumbnail];
 
     return Scaffold(
       appBar: AppBar(
@@ -26,7 +29,9 @@ class ProductDetailScreen extends StatelessWidget {
               favourites.toggleFavourite(product);
             },
             icon: Icon(
-              isFavourite ? Icons.favorite_rounded : Icons.favorite_border_rounded,
+              isFavourite
+                  ? Icons.favorite_rounded
+                  : Icons.favorite_border_rounded,
               color: isFavourite ? Colors.red : null,
             ),
             tooltip: isFavourite ? 'Remove from wishlist' : 'Add to wishlist',
@@ -48,15 +53,23 @@ class ProductDetailScreen extends StatelessWidget {
                     margin: const EdgeInsets.only(right: 8),
                     decoration: BoxDecoration(
                       borderRadius: BorderRadius.circular(16),
-                      color: Theme.of(context).colorScheme.surfaceContainerHighest,
+                      color: Theme.of(
+                        context,
+                      ).colorScheme.surfaceContainerHighest,
                     ),
                     child: ClipRRect(
                       borderRadius: BorderRadius.circular(16),
-                      child: Image.network(
-                        imageUrl,
+                      child: CachedNetworkImage(
+                        imageUrl: imageUrl,
                         fit: BoxFit.cover,
-                        errorBuilder: (_, _, _) => const Center(
-                          child: Icon(Icons.image_not_supported_outlined, size: 48),
+                        placeholder: (context, url) => const Center(
+                          child: CircularProgressIndicator(strokeWidth: 2),
+                        ),
+                        errorWidget: (context, url, error) => const Center(
+                          child: Icon(
+                            Icons.image_not_supported_outlined,
+                            size: 48,
+                          ),
                         ),
                       ),
                     ),
@@ -67,16 +80,16 @@ class ProductDetailScreen extends StatelessWidget {
             const SizedBox(height: 20),
             Text(
               product.title,
-              style: Theme.of(context).textTheme.headlineSmall?.copyWith(
-                fontWeight: FontWeight.w700,
-              ),
+              style: Theme.of(
+                context,
+              ).textTheme.headlineSmall?.copyWith(fontWeight: FontWeight.w700),
             ),
             const SizedBox(height: 12),
             Row(
               children: [
                 Chip(
                   avatar: const Icon(Icons.attach_money_rounded, size: 18),
-                  label: Text('\$${product.price.toStringAsFixed(2)}'),
+                  label: Text('RM ${product.price.toStringAsFixed(2)}'),
                 ),
                 const SizedBox(width: 8),
                 Chip(
@@ -85,7 +98,11 @@ class ProductDetailScreen extends StatelessWidget {
                 ),
                 const SizedBox(width: 8),
                 Chip(
-                  avatar: const Icon(Icons.star_rounded, color: Colors.amber, size: 18),
+                  avatar: const Icon(
+                    Icons.star_rounded,
+                    color: Colors.amber,
+                    size: 18,
+                  ),
                   label: Text(product.rating.toStringAsFixed(1)),
                 ),
               ],
@@ -93,13 +110,15 @@ class ProductDetailScreen extends StatelessWidget {
             const SizedBox(height: 24),
             Text(
               'Description',
-              style: Theme.of(context).textTheme.titleLarge?.copyWith(
-                fontWeight: FontWeight.w700,
-              ),
+              style: Theme.of(
+                context,
+              ).textTheme.titleLarge?.copyWith(fontWeight: FontWeight.w700),
             ),
             const SizedBox(height: 8),
             Text(
-              product.description.isEmpty ? 'No description available.' : product.description,
+              product.description.isEmpty
+                  ? 'No description available.'
+                  : product.description,
               style: Theme.of(context).textTheme.bodyLarge,
             ),
           ],
