@@ -1,16 +1,39 @@
-# sweetmag_test_mka
+# SweetMeg
 
-A new Flutter project.
+Technical Assessment For Flutter Developer Position
 
-## Getting Started
+# Candidate
 
-This project is a starting point for a Flutter application.
+Mohd Khairul Akhtar  
+01126354420  
+khairulakhtar96@gmail.com 
 
-A few resources to get you started if this is your first Flutter project:
+# App Guide
 
-- [Lab: Write your first Flutter app](https://docs.flutter.dev/get-started/codelab)
-- [Cookbook: Useful Flutter samples](https://docs.flutter.dev/cookbook)
+Clone this repository and follow the setup below to run. The project is currently configured for Android only.
 
-For help getting started with Flutter development, view the
-[online documentation](https://docs.flutter.dev/), which offers tutorials,
-samples, guidance on mobile development, and a full API reference.
+#### Setup Environment
+
+Flutter SDK : **3.38.3**  
+Dart SDK : **3.10.1**  
+Android SDK : **36.1.0**  
+Android Studio : **2024.2.1 Ladybug - Patch 3**
+Java/JDK: **17**
+VS Code : **1.145.3**  
+
+# State Management
+
+**Provider :** implementation lightweight, straightforward, less boilerplate code. 
+
+# Code
+
+Please refer to commit history where commit message start with '-' is AI generated with less manual changes by developer. While commit message NOT start with '-' is manually code or changed. 
+
+# Future Improvement
+
+- Handle remove wishlist product if product not available anymore
+- Implement Dio for better error handling with interceptor using Alice to check API call
+- Restructure to split logic not required state outside from provider for easier to use by other class and cleaner
+- Create reuseable styling for better UI consistency.
+- Implement animation for widget and navigation
+
